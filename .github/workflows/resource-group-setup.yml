@@ -2,7 +2,7 @@ name: Set up resource group and access
 
 on:
   repository_dispatch:
-    types: [setup-resource-group]
+    types: setup-resource-group
 
 jobs:
   resource-group-setup:
