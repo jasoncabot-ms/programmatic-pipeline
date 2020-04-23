@@ -9,19 +9,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Azure Login
-      uses: Azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Check Credentials
+        run: |
+          if [ -z ${AZURE_CREDENTIALS+x} ]; then echo "No credentials"; else echo "Credentials set"; fi
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Create Resource Group
-      run: |
-        SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-        RESOURCE_GROUP_NAME=${{ github.event.client_payload.resource_group }}
-        LOCATION=${{ github.event.client_payload.location }}
+      - name: Create Resource Group
+        run: |
+          SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+          RESOURCE_GROUP_NAME=${{ github.event.client_payload.resource_group }}
+          LOCATION=${{ github.event.client_payload.location }}
 
-        RESOURCE_GROUP=$(az group create --name "$RESOURCE_GROUP_NAME" --location "$LOCATION" --q "id" -o tsv)
+          RESOURCE_GROUP=$(az group create --name "$RESOURCE_GROUP_NAME" --location "$LOCATION" --q "id" -o tsv)
 
-        echo "Created resource group with name ${RESOURCE_GROUP_NAME} in subscription ${SUBSCRIPTION_ID}"
+          echo "Created resource group with name ${RESOURCE_GROUP_NAME} in subscription ${SUBSCRIPTION_ID}"
