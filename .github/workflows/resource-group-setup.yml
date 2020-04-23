@@ -19,8 +19,8 @@ jobs:
     - name: Create Resource Group
       run: |
         SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-        RESOURCE_GROUP_NAME=${{ github.event.resource_group }}
-        LOCATION=${{ github.event.location }}
+        RESOURCE_GROUP_NAME=${{ github.event.client_payload.resource_group }}
+        LOCATION=${{ github.event.client_payload.location }}
 
         RESOURCE_GROUP=$(az group create --name "$RESOURCE_GROUP_NAME" --location "$LOCATION" --q "id" -o tsv)
 
