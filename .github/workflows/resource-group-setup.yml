@@ -1,0 +1,27 @@
+name: Set up resource group and access
+
+on:
+  repository_dispatch:
+    types: [setup-resource-group]
+
+jobs:
+  resource-group-setup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create Resource Group
+      run: |
+        SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+        RESOURCE_GROUP_NAME=${{ github.event.resource_group }}
+        LOCATION=${{ github.event.location }}
+
+        RESOURCE_GROUP=$(az group create --name "$RESOURCE_GROUP_NAME" --location "$LOCATION" --q "id" -o tsv)
+
+        echo "Created resource group with name ${RESOURCE_GROUP_NAME} in subscription ${SUBSCRIPTION_ID}"
